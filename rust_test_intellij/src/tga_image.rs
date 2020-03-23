@@ -1,9 +1,3 @@
-fn main() {
-    //test_inv();
-
-
-}
-
 
 
 // Prolly packed will be better solution
@@ -44,8 +38,8 @@ impl TGAColor {
     fn get_tga_color_with_val(v: u32, b: i32) -> TGAColor {
         TGAColor {un: RGBARepr::val(v), bytes_pp: b}
     }
-    fn get_tga_color_from(other: TGAColor) -> TGAColor {
-        TGAColor {un: other.un, bytes_pp: other.bytes_pp}
+    fn get_tga_color_from(other: &TGAColor) -> TGAColor {
+        TGAColor {un: *other.un, bytes_pp: *other.bytes_pp}
     }
 }
 
@@ -61,28 +55,22 @@ struct TGAImage {
 
 impl TGAImage {
     fn get_default_tga_image() -> TGAImage {
-        TGAImage {data: [0 as u8].to_vec(), width: 0, height: 0, bytes_pp: 0}
+        TGAImage {data: {}, width: 0, height: 0, bytes_pp: 0}
     }
-    fn get_tga_image_with(w: i32, h: i32, b: i32) -> TGAImage {
-        TGAImage {data: Vec::new(), width: w,
+    fn get_tga_image_with(&w: i32, h: i32, b: i32) -> TGAImage {
+        TGAImage {data: [0, w * h * b], width: w,
             height: h, bytes_pp: b}
     }
-    fn get_tga_image_from(other: TGAImage) -> TGAImage {
-        TGAImage {data: other.data, width: other.width,
-            height: other.height, bytes_pp: other.bytes_pp}
+    fn get_tga_image_from(other: &TGAImage) -> TGAImage {
+        TGAImage {data: *other.data, width: *other.width,
+            height: *other.height, bytes_pp: *other.bytes_pp}
     }
 }
 
 impl TGAImage {
-    fn read_tga_file(&mut self, path: &str) {
-        if !self.data.is_empty(){
-            self.data.clear();
+    fn read_tga_file(path: &str) {
+        if !data.isEmpty(){
+            data.clean();
         }
-
-        // Open file
-
-        // Tga hdr
-        // read then from file
-
     }
 }
