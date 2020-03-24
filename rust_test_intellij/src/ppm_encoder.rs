@@ -33,7 +33,8 @@ pub mod ppm_encoder {
         }
 
         fn get_offset(&self, x: u32, y: u32) -> Option<usize> {
-            let offset = (y * self.width * 3) + (x * 3);
+            // Origin at the left bottom corner
+            let offset = ((self.height - y) * self.width * 3) + (x * 3);
             if offset < self.buffer_size() {
                 Some(offset as usize)
             } else {

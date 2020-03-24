@@ -36,7 +36,7 @@ pub mod ppm_decoder {
         let height: u32 = match hdr_str_splitted[2].trim().parse()  {
             Err(_) => return (None, String::from("Invalid header, height value")),
             Ok(i) => i
-        };;
+        };
         let bits_pp: u8 = match hdr_str_splitted[3].trim().parse() {
             Err(_) => return (None, String::from("Invalid header, bits_pp value")),
             Ok(i) => i
