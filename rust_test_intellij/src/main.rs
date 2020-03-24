@@ -116,39 +116,60 @@ impl TGAImage {
 
 mod ppm_encoder;
 mod ppm_decoder;
+mod renderer;
+mod obj_model;
 use ppm_encoder::ppm_encoder::PPM;
 use ppm_encoder::ppm_encoder::RGB;
 use std::time::{Duration, Instant};
+use ppm_decoder::ppm_decoder::read_image;
+use renderer::renderer::Point;
+use renderer::renderer::draw_line;
+use crate::obj_model::obj_model::Model;
 
 fn main() {
-    let now = Instant::now();
-    for i in 0..150 {
-        let a = PPM::new(1920, 1080, 255);
-        a.write_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm")
-            .expect("Error, while writing an image black");
-
-        let image = match ppm_decoder::ppm_decoder::read_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm") {
-            (Some(p), _) => {
-                Some(p)
-            },
-            (None, s) => {
-                println!("{}", s);
-                None
-            }
-        };
-
-        let mut unpacked_img = image.unwrap();
-
-        // Draw in green
-        for x in 0..unpacked_img.width {
-            for y in 0..unpacked_img.height {
-                unpacked_img.set_pixel(x, y, &RGB { red: 0, green: 0, blue: 100 });
-            }
+    /*let mut img = match read_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm"){
+        (Some(t),_) => t,
+        (None, s) => {
+            println!("{}", s);
+            return;
         }
+    };*/
 
-        unpacked_img.write_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm")
-            .expect("Error, while writing an image green");
+    let obj_path = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/obj/3.obj";
+    let imj_path = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm";
+
+    let n = Instant::now();
+    print_obj(obj_path, imj_path);
+    println!("{}", n.elapsed().as_millis());
+}
+
+fn print_obj(obj_path: &str, img_path: &str) {
+    let mut img = ppm_encoder::ppm_encoder::PPM::new(1000, 1000, 255);
+
+    let mut model = Model::new();
+    model.read_obj(obj_path);
+
+    // Scale object to fit the screen according to the next properties
+    let max_p = model.max_coord();
+    let offset: f32 = max_p.x.max(max_p.y);
+    let scale: f32 = offset * 2.;
+
+    for i in 0..model.faces.len() {
+        // Take bended vertices, actually forming one face
+        let cur_faces: [u32; 3] = [model.faces[i].f1.v, model.faces[i].f2.v, model.faces[i].f3.v];
+        for k in 0..3{
+            // Only x, y, dimensions
+            let v0 = model.vertices.get(&cur_faces[k]).unwrap();
+            let v1 = model.vertices.get(&cur_faces[(k+1)%3]).unwrap();
+            let p1 = Point {
+                x: ((v0.x + offset)*img.width as f32/scale) as u32,
+                y: ((v0.y + offset)*img.height as f32/scale) as u32};
+            let p2 = Point {
+                x: ((v1.x + offset)*img.width as f32/scale) as u32,
+                y: ((v1.y + offset)*img.height as f32/scale) as u32};
+            draw_line(p1, p2, &mut img, &RGB{red: 255, green: 0, blue: 0});
+        }
     }
 
-    println!("{}", now.elapsed().as_millis());
+    img.write_image(img_path);
 }

@@ -7,11 +7,10 @@ pub mod renderer{
         pub y: u32
     }
     // Bresenham’s line algorithm
-    pub fn draw_line(mut begin: Point, mut end: Point, image: &mut PPM) {
+    pub fn draw_line(mut begin: Point, mut end: Point, image: &mut PPM, color: &RGB) {
         let mut steep = false;
         let delta_x = (begin.x as i32 - end.x as i32).abs();
         let delta_y = (begin.y as i32 - end.y as i32).abs();
-
         if delta_x < delta_y {
             steep = true;
             std::mem::swap(&mut begin.x, &mut begin.y);
@@ -21,6 +20,9 @@ pub mod renderer{
             std::mem::swap(&mut begin, &mut end);
         }
 
+        let delta_x = (begin.x as i32 - end.x as i32).abs();
+        let delta_y = (begin.y as i32 - end.y as i32).abs();
+
         let mut error: i32 = 0;
         let delta_err: i32 = (delta_y + 1);
         let mut y = begin.y;
@@ -28,10 +30,11 @@ pub mod renderer{
         let dir_y: i32 = end.y as i32 - begin.y as i32;
         for x in begin.x..end.x+1 {
             if steep{
-                image.set_pixel(y, x, &RGB{red: 255, green: 0, blue: 0});
+                image.set_pixel(y, x, color);
             }
             else {
-                image.set_pixel(x, y, &RGB{red: 255, green: 0, blue: 0});
+                if(y > 1000 || x < 0) {println!("{} {} - hello", y, x)};
+                image.set_pixel(x, y, color);
             }
             error += delta_err;
             if error > (delta_x + 1){
