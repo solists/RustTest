@@ -1,9 +1,36 @@
+/*use std::io::{Read, Write};
+use std::mem;
+use std::slice;
+use std::fs;
+use std::fs::File;
+
 fn main() {
     //test_inv();
+    test_output_file();
+    test_input_file();
+}
 
+fn test_input_file() {
 
 }
 
+fn test_output_file() {
+    let arr: [u8; 8] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+    let mut f = File::create("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.hh").expect("Unable to create file");
+
+    f.write_all(&arr);
+}
+
+
+#[repr(C, packed)]
+#[derive(Debug, Copy, Clone)]
+struct Configuration {
+    item1: u8,
+    item2: u16,
+    item3: i32,
+    item4: [u8; 2]
+}
 
 
 // Prolly packed will be better solution
@@ -85,4 +112,43 @@ impl TGAImage {
         // read then from file
 
     }
+}*/
+
+mod ppm_encoder;
+mod ppm_decoder;
+use ppm_encoder::ppm_encoder::PPM;
+use ppm_encoder::ppm_encoder::RGB;
+use std::time::{Duration, Instant};
+
+fn main() {
+    let now = Instant::now();
+    for i in 0..150 {
+        let a = PPM::new(1920, 1080, 255);
+        a.write_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm")
+            .expect("Error, while writing an image black");
+
+        let image = match ppm_decoder::ppm_decoder::read_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm") {
+            (Some(p), _) => {
+                Some(p)
+            },
+            (None, s) => {
+                println!("{}", s);
+                None
+            }
+        };
+
+        let mut unpacked_img = image.unwrap();
+
+        // Draw in green
+        for x in 0..unpacked_img.width {
+            for y in 0..unpacked_img.height {
+                unpacked_img.set_pixel(x, y, &RGB { red: 0, green: 0, blue: 100 });
+            }
+        }
+
+        unpacked_img.write_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm")
+            .expect("Error, while writing an image green");
+    }
+
+    println!("{}", now.elapsed().as_millis());
 }
