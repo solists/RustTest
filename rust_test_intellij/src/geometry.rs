@@ -1,13 +1,24 @@
 pub mod geometry {
-    pub struct Triangle {
-        pub p1: Point,
-        pub p2: Point,
-        pub p3: Point,
+    pub struct TriangleFloat {
+        pub p1: PointFloat,
+        pub p2: PointFloat,
+        pub p3: PointFloat,
     }
 
-    pub struct Point {
-        pub x: u32,
-        pub y: u32,
+    pub struct PointFloat {
+        pub x: f32,
+        pub y: f32,
+    }
+
+    pub struct PointInt {
+        pub x: i32,
+        pub y: i32,
+    }
+
+    pub struct TriangleInt {
+        pub p1: PointInt,
+        pub p2: PointInt,
+        pub p3: PointInt,
     }
 
     pub struct Point3 {
@@ -16,34 +27,43 @@ pub mod geometry {
         pub z: f32,
     }
 
-    impl core::ops::Add for &Point {
-        type Output = Point;
+    impl core::ops::Add for &PointInt {
+        type Output = PointInt;
 
-        fn add(self, other: Self) -> Point {
-            Point {
-                x: &self.x + &other.x,
-                y: &self.y + &other.y,
+        fn add(self, other: &PointInt) -> PointInt {
+            PointInt {
+                x: self.x + other.x,
+                y: self.y + other.y,
             }
         }
     }
 
-    impl core::ops::Sub for &Point {
-        type Output = Point;
+    impl core::ops::Sub for &PointInt {
+        type Output = PointInt;
 
-        fn sub(self, other: &Point) -> Point {
-            Point {
-                x: &self.x - &other.x,
-                y: &self.y - &other.y,
+        fn sub(self, other: &PointInt) -> PointInt {
+            PointInt {
+                x: self.x - other.x,
+                y: self.y - other.y,
             }
         }
     }
-    impl core::ops::Mul for Point {
-        type Output = Point;
+    impl core::ops::Mul for PointInt {
+        type Output = PointInt;
 
-        fn mul(self, other: Point) -> Point {
-            Point {
+        fn mul(self, other: PointInt) -> PointInt {
+            PointInt {
                 x: self.x * other.x,
                 y: self.y * other.y,
+            }
+        }
+    }
+
+    impl PointInt {
+        pub fn clone(&self) -> PointInt {
+            PointInt {
+                x: self.x,
+                y: self.y,
             }
         }
     }

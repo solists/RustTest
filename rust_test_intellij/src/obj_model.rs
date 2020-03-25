@@ -1,7 +1,7 @@
 pub mod obj_model{
     use std::collections::HashMap;
     use std::path::Path;
-    use std::io::{BufReader, Read, BufRead};
+    use std::io::{BufReader, BufRead};
     use std::fs::File;
     use std::string::String;
     use crate::geometry::geometry::Point3;
@@ -18,14 +18,14 @@ pub mod obj_model{
         // Used for scaling mostly
         pub fn max_coord(&self) -> Point3 {
             let mut max_p = Point3{x:0., y: 0., z: 0.};
-            for (n, p) in &self.vertices {
-                if(p.x.abs() > max_p.x) {
+            for (_, p) in &self.vertices {
+                if p.x.abs() > max_p.x {
                     max_p.x = p.x.abs();
                 }
-                if(p.y.abs() > max_p.y) {
+                if p.y.abs() > max_p.y {
                     max_p.y = p.y.abs();
                 }
-                if(p.z.abs() > max_p.z) {
+                if p.z.abs() > max_p.z {
                     max_p.z = p.z.abs();
                 }
             }

@@ -1,15 +1,18 @@
 pub mod renderer{
     use crate::ppm_encoder::ppm_encoder::PPM;
     use crate::ppm_encoder::ppm_encoder::RGB;
-    use crate::ppm_encoder;
+    //use crate::ppm_encoder;
     use crate::obj_model::obj_model::Model;
-    use crate::geometry::geometry::Point3;
-    use crate::geometry::geometry::Point;
+    //use crate::geometry::geometry::Point3;
+    use crate::geometry::geometry::PointInt;
+    use crate::geometry::geometry::TriangleInt;
 
 
 
     // Bresenham’s line algorithm
-    pub fn draw_line(mut begin: Point, mut end: Point, image: &mut PPM, color: &RGB) {
+    pub fn draw_line(b: &PointInt, e: &PointInt, image: &mut PPM, color: &RGB) {
+        let mut begin = b.clone();
+        let mut end = e.clone();
         let mut steep = false;
         let delta_x = (begin.x as i32 - end.x as i32).abs();
         let delta_y = (begin.y as i32 - end.y as i32).abs();
@@ -30,12 +33,12 @@ pub mod renderer{
         let mut y = begin.y;
 
         let dir_y: i32 = end.y as i32 - begin.y as i32;
-        for x in begin.x..end.x+1 {
+        for x in begin.x as u32..(end.x as u32+1) {
             if steep{
-                image.set_pixel(y, x, color);
+                image.set_pixel(y as u32, x, color);
             }
             else {
-                image.set_pixel(x, y, color);
+                image.set_pixel(x, y as u32, color);
             }
             error += delta_err;
             if error > (delta_x + 1){
@@ -45,18 +48,28 @@ pub mod renderer{
                 else if dir_y < 0{
                     y -= 1;
                 }
-                error -= (delta_x + 1);
+                error -= delta_x + 1;
             }
         }
     }
 
-    pub fn draw_triangle(p1: Point, p2: Point, p3: Point, image: &mut PPM) {
+    pub fn draw_triangle(p1: &PointInt, p2: &PointInt, p3: &PointInt, image: &mut PPM, color: &RGB) -> bool {
+        draw_line(p1, p2, image, color);
+        draw_line(p2, p3, image, color);
+        draw_line(p3, p1, image, color);
 
+        true
     }
 
-    pub fn print_obj_in_lines(obj_path: &str, img_path: &str) {
-        let mut img = ppm_encoder::ppm_encoder::PPM::new(1000, 1000, 255);
+    pub fn draw_triangle_t(tr: &TriangleInt, image: &mut PPM, color: &RGB) -> bool {
+        draw_line(&tr.p1, &tr.p2, image, color);
+        draw_line(&tr.p2, &tr.p3, image, color);
+        draw_line(&tr.p3, &tr.p1, image, color);
 
+        true
+    }
+
+    pub fn print_obj_in_lines(obj_path: &str, image: &mut PPM, color: &RGB) -> bool {
         let mut model = Model::new();
         model.read_obj(obj_path);
 
@@ -72,17 +85,20 @@ pub mod renderer{
                 // Only x, y, dimensions
                 let v0 = model.vertices.get(&cur_faces[k]).unwrap();
                 let v1 = model.vertices.get(&cur_faces[(k+1)%3]).unwrap();
-                let p1 = Point {
-                    x: ((v0.x + offset)*img.width as f32/scale) as u32,
-                    y: ((v0.y + offset)*img.height as f32/scale) as u32};
-                let p2 = Point {
-                    x: ((v1.x + offset)*img.width as f32/scale) as u32,
-                    y: ((v1.y + offset)*img.height as f32/scale) as u32};
-                draw_line(p1, p2, &mut img, &RGB{red: 255, green: 0, blue: 0});
+                let p1 = PointInt {
+                    x: ((v0.x + offset)*image.width as f32/scale) as i32,
+                    y: ((v0.y + offset)*image.height as f32/scale) as i32};
+                let p2 = PointInt {
+                    x: ((v1.x + offset)*image.width as f32/scale) as i32,
+                    y: ((v1.y + offset)*image.height as f32/scale) as i32};
+                draw_line(&p1, &p2, image, &color);
             }
         }
+        true
+    }
 
-        img.write_image(img_path).expect("Error while writing image");
+    pub fn draw_point(point: &PointInt, image: &mut PPM, color: &RGB) {
+        image.set_pixel(point.x as u32, point.y as u32, color);
     }
 
 }

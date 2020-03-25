@@ -72,8 +72,8 @@ pub mod ppm_encoder {
             let path = Path::new(filename);
             let mut file = (File::create(&path))?;
             let header = format!("P6 {} {} {}\n", self.width, self.height, self.bits_pp);
-            (file.write(header.as_bytes()))?;
-            (file.write(&self.data))?;
+            (file.write_all(header.as_bytes()))?;
+            (file.write_all(&self.data))?;
             Ok(())
         }
     }
