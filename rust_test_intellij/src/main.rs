@@ -37,32 +37,44 @@ fn main() {
 
     let n = Instant::now();
 
-    for _i in 0..1 {
+    let mut c = 0;
+    let mut image = PPM::new(1000, 1000, 255);
+
+    /*let tri = TriangleInt{
+        p1: PointInt{x: 10, y: 20},
+        p2: PointInt{x: 30, y: 70},
+        p3: PointInt{x: 50, y: 20}
+    };*/
+    //renderer::renderer::draw_triangle_t(&tri, &mut image, &white);
+    //renderer::renderer::draw_triangle(&a, &b, &in_p, &mut image, &white);
+
+    for _i in 0..100_000_000 {
         //test_o_max_coord(obj_path, &model);
-        let mut image = PPM::new(100, 100, 255);
+        
         //let mut model = Model::new();
         //model.read_obj(obj_path_win);
         //renderer::renderer::print_obj_in_lines(&obj_path_win, &mut image, &RGB{red: 255, green: 0, blue: 0});
         let tr = TriangleInt{
-            p1: PointInt{x: 1, y: 2},
-            p2: PointInt{x: 3, y: 6},
-            p3: PointInt{x: 10, y: 9}
+            p1: PointInt{x: 0, y: 1},
+            p2: PointInt{x: 3, y: 7},
+            p3: PointInt{x: 6, y: 1}
         };
-        let a = PointInt{x: 23, y: 15};
-        let b = PointInt{x: 18, y: 5};
-        let c = &a + &b;
-        let in_p = &PointInt{x: 4, y: 5};
+        //let a = PointInt{x: 23, y: 15};
+        //let b = PointInt{x: 18, y: 5};
+        //let c = &a + &b;
+        let in_p = PointInt{x: _i, y: 2};
         let isin = triangle::triangle::in_triangle(&in_p, &tr);
-        //renderer::renderer::draw_triangle(&a, &b, &in_p, &mut image, &white);
-        renderer::renderer::draw_triangle_t(&tr, &mut image, &white);
-        renderer::renderer::draw_point(&in_p, &mut image, &red);
-        println!("{}", isin);
-        image.write_image(&img_path_win).expect("Error while writing an image!");
+        if isin {c += 1;}
+        
+        //renderer::renderer::draw_point(&PointInt{x: in_p.x * 10, y: in_p.y * 10}, &mut image, &red);
+        //println!("{}", isin);
+        //
         //println!("{}, {}", c.x, c.y);
     }
+    //image.write_image(&img_path_win).expect("Error while writing an image!");
 
-
-    println!("{}", n.elapsed().as_millis());
+    println!("np: {}", c);
+    println!("Time in ms: {}", n.elapsed().as_millis());
 }
 
 

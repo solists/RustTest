@@ -38,6 +38,16 @@ pub mod geometry {
         }
     }
 
+    impl core::ops::Sub for PointInt {
+        type Output = PointInt;
+
+        fn sub(self, other: PointInt) -> PointInt {
+            PointInt {
+                x: self.x - other.x,
+                y: self.y - other.y,
+            }
+        }
+    }
     impl core::ops::Sub for &PointInt {
         type Output = PointInt;
 

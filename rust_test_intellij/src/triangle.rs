@@ -19,6 +19,7 @@ pub mod triangle {
         return w1 >= 0. && w2 >= 0. && (w1 + w2) <= 1.;
     }
 
+    // Faster algo ~25%, does not include edges of triangle
     pub fn in_triangle_f(p: &PointInt, tri: &TriangleInt) -> bool {
         let a_side = (tri.p1.y - tri.p2.y) * p.x + (tri.p2.x - tri.p1.x) * p.y + (tri.p1.x * tri.p2.y - tri.p2.x * tri.p1.y);
 		let b_side = (tri.p2.y - tri.p3.y) * p.x + (tri.p3.x - tri.p2.x) * p.y + (tri.p2.x * tri.p3.y - tri.p3.x * tri.p2.y);
@@ -26,4 +27,5 @@ pub mod triangle {
         
         return (a_side >= 0 && b_side >= 0 && c_side >= 0) || (a_side < 0 && b_side < 0 && c_side < 0);
     }
+
 }
