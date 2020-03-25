@@ -118,13 +118,17 @@ mod ppm_encoder;
 mod ppm_decoder;
 mod renderer;
 mod obj_model;
+mod triangle;
+mod geometry;
 use ppm_encoder::ppm_encoder::PPM;
 use ppm_encoder::ppm_encoder::RGB;
 use std::time::{Duration, Instant};
 use ppm_decoder::ppm_decoder::read_image;
-use renderer::renderer::Point;
 use renderer::renderer::draw_line;
+use geometry::geometry::Point3;
 use crate::obj_model::obj_model::Model;
+use crate::geometry::geometry::Point;
+use crate::geometry::geometry::Triangle;
 
 fn main() {
     /*let mut img = match read_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm"){
@@ -135,41 +139,34 @@ fn main() {
         }
     };*/
 
-    let obj_path = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/obj/3.obj";
-    let imj_path = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm";
+    let obj_path = "/home/semen/Prog/RustTemp/RustTest/1.obj";
+    let imj_path = "/home/semen/Prog/RustTemp/RustTest/temp.ppm";
 
     let n = Instant::now();
-    print_obj(obj_path, imj_path);
+
+    for i in 0..1 {
+        //test_o_max_coord(obj_path, &model);
+        //let mut model = Model::new();
+        //model.read_obj(obj_path);
+        //renderer::renderer::print_obj_in_lines(&obj_path, &imj_path);
+        let tr = Triangle{
+            p1: Point{x: 1, y: 2},
+            p2: Point{x: 3, y: 6},
+            p3: Point{x: 10, y: 9}
+        };
+        let a = Point{x: 23, y: 15};
+        let b = Point{x: 18, y: 5};
+        let c = &a + &b;
+        let isin = triangle::triangle::in_triangle(&Point{x: 1, y: 4}, &tr);
+        println!("{}", isin);
+        //println!("{}, {}", c.x, c.y);
+    }
+
+
     println!("{}", n.elapsed().as_millis());
 }
 
-fn print_obj(obj_path: &str, img_path: &str) {
-    let mut img = ppm_encoder::ppm_encoder::PPM::new(1000, 1000, 255);
 
-    let mut model = Model::new();
-    model.read_obj(obj_path);
-
-    // Scale object to fit the screen according to the next properties
-    let max_p = model.max_coord();
-    let offset: f32 = max_p.x.max(max_p.y);
-    let scale: f32 = offset * 2.;
-
-    for i in 0..model.faces.len() {
-        // Take bended vertices, actually forming one face
-        let cur_faces: [u32; 3] = [model.faces[i].f1.v, model.faces[i].f2.v, model.faces[i].f3.v];
-        for k in 0..3{
-            // Only x, y, dimensions
-            let v0 = model.vertices.get(&cur_faces[k]).unwrap();
-            let v1 = model.vertices.get(&cur_faces[(k+1)%3]).unwrap();
-            let p1 = Point {
-                x: ((v0.x + offset)*img.width as f32/scale) as u32,
-                y: ((v0.y + offset)*img.height as f32/scale) as u32};
-            let p2 = Point {
-                x: ((v1.x + offset)*img.width as f32/scale) as u32,
-                y: ((v1.y + offset)*img.height as f32/scale) as u32};
-            draw_line(p1, p2, &mut img, &RGB{red: 255, green: 0, blue: 0});
-        }
-    }
-
-    img.write_image(img_path);
+fn test_o_max_coord(obj_path: &str, model: &Model) -> Point3 {
+    model.max_coord()
 }

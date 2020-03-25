@@ -4,6 +4,7 @@ pub mod obj_model{
     use std::io::{BufReader, Read, BufRead};
     use std::fs::File;
     use std::string::String;
+    use crate::geometry::geometry::Point3;
 
     pub struct Model {
         pub vertices: HashMap<u32, Point3>,
@@ -12,7 +13,8 @@ pub mod obj_model{
 
 
     impl Model {
-        // Returns Point with abs max values ov vertices coordinates, independently
+        // Returns Point with abs max values of vertices coordinates,
+        // independently {x, y, z}
         // Used for scaling mostly
         pub fn max_coord(&self) -> Point3 {
             let mut max_p = Point3{x:0., y: 0., z: 0.};
@@ -31,12 +33,8 @@ pub mod obj_model{
         }
     }
 
-    pub struct Point3 {
-        pub x: f32,
-        pub y: f32,
-        pub z: f32,
-    }
-
+    // Face consists of 3 props, so props describe one vertex:
+    // Coordinates, texture and normal, props is actually vertex properties
     pub struct Props {
         pub v: u32,
         pub vt: u32,
@@ -73,7 +71,7 @@ pub mod obj_model{
                     Ok(_) => line.split_whitespace().collect::<Vec<&str>>()
                 };
                 // Empty lines just skipped
-                if(splitted_line.len() == 0) {continue;}
+                if splitted_line.len() == 0 {continue;}
                 // Vertex property, consists of 3 coordinates
                 if splitted_line[0] == "v"{
                     if splitted_line.len() != 4 { return None; }
@@ -94,31 +92,22 @@ pub mod obj_model{
                         let v2 = splitted_line[2].split('/').collect::<Vec<&str>>();
                         let v3 = splitted_line[3].split('/').collect::<Vec<&str>>();
 
-                        // Often vn is just skipped (like//), match it manually
-                        let props1 = Props{
-                            v: v1[0].trim().parse().expect("Error"),
-                            vt: match v1[1].trim().parse() {
-                                Ok(value) => value,
-                                Err(_) => 0,
-                            },
-                            vn: v1[2].trim().parse().expect("Error")
+                        // Returns a props structure from v/vt/vn string
+                        let parse_face_to_props = |vertex: Vec<&str>| {
+                            Props {
+                                v: vertex[0].trim().parse().expect("Error"),
+                                // Often vn is just skipped (like//), match it manually
+                                vt: match vertex[1].trim().parse() {
+                                    Ok(value) => value,
+                                    Err(_) => 0,
+                                },
+                                vn: vertex[2].trim().parse().expect("Error")
+                            }
                         };
-                        let props2 = Props{
-                            v: v2[0].trim().parse().expect("Error"),
-                            vt: match v2[1].trim().parse() {
-                                Ok(value) => value,
-                                Err(_) => 0,
-                            },
-                            vn: v2[2].trim().parse().expect("Error")
-                        };
-                        let props3 = Props{
-                            v: v3[0].trim().parse().expect("Error"),
-                            vt: match v3[1].trim().parse() {
-                                Ok(value) => value,
-                                Err(_) => 0,
-                            },
-                            vn: v3[2].trim().parse().expect("Error")
-                        };
+
+                        let props1 = parse_face_to_props(v1);
+                        let props2 = parse_face_to_props(v2);
+                        let props3 = parse_face_to_props(v3);
 
                         let faces = Face{f1: props1, f2: props2, f3: props3};
 
