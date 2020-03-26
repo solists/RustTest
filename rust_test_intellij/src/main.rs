@@ -3,6 +3,7 @@ mod ppm_decoder;
 mod renderer;
 mod obj_model;
 mod geometry;
+mod inv_sqrt;
 use ppm_encoder::ppm_encoder::PPM;
 use ppm_encoder::ppm_encoder::RGB;
 use std::time::{Instant};
@@ -14,6 +15,7 @@ use crate::obj_model::obj_model::Model;
 //use crate::geometry::geometry::Triangle;
 use crate::geometry::triangle::TriangleInt;
 use crate::geometry::point::PointInt;
+use crate::geometry::vector::Vector3;
 
 fn main() {
     /*let mut img = match read_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm"){
@@ -30,7 +32,7 @@ fn main() {
     let white = RGB{red: 255, green: 255, blue: 255};
 
     let obj_path_linx = "/home/semen/Prog/RustTemp/RustTest/rust_test_intellij/obj/1.obj";
-    let obj_path_win = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/obj/2.obj";
+    let obj_path_win = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/obj/3.obj";
     let img_path_linx = "/home/semen/Prog/RustTemp/RustTest/rust_test_intellij/src/temp.ppm";
     let img_path_win = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm";
 
@@ -50,10 +52,10 @@ fn main() {
     //renderer::renderer::draw_triangle_t(&tri, &mut image, &white);
     //renderer::renderer::draw_triangle(&a, &b, &in_p, &mut image, &white);
     let n = Instant::now();
-    for _i in 0..1000 {
+    for _i in 0..1 {
         //test_o_max_coord(obj_path, &model);
         
-        renderer::renderer::print_obj_in_triangles(&model, &mut image, &red, true);
+        renderer::renderer::print_obj_in_triangles(&model, &mut image, &white, true);
         //renderer::renderer::print_obj_in_lines(&model, &mut image, &red);
         //let tr = TriangleInt{
         //    p1: PointInt{x: 0, y: 1},

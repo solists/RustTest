@@ -12,6 +12,19 @@ pub mod ppm_encoder {
         pub blue: u8
     }
 
+    impl core::ops::Mul<f32> for &RGB {
+        type Output = RGB;
+        // MIGHT LOSS OF DATA
+        fn mul(self, other: f32) -> RGB {
+            let gamma = 0.95;
+            RGB {
+                red: (self.red as f32 * other).powf(gamma) as u8,
+                green: (self.green as f32 * other).powf(gamma) as u8,
+                blue: (self.blue as f32 * other).powf(gamma) as u8,
+            }
+        }
+    }
+
     pub struct PPM {
         pub width: u32,
         pub height: u32,

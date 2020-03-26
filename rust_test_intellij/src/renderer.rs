@@ -4,13 +4,15 @@ pub mod renderer{
     //use crate::ppm_encoder;
     use crate::obj_model::obj_model::Model;
     //use crate::geometry::geometry::Point3;
-    use crate::geometry::point::PointInt;
-    use crate::geometry::triangle::TriangleInt;
+    use crate::geometry::point::{PointInt, Point3Int, Point3};
+    use crate::geometry::triangle::{TriangleInt, TriangleFloat};
+    use crate::geometry::vector::Vector3;
+    //use crate::geometry::vector;
 
 
 
     // Bresenham’s line algorithm
-    pub fn draw_line(b: &PointInt, e: &PointInt, image: &mut PPM, color: &RGB) {
+    pub fn draw_line(b: &Point3Int, e: &Point3Int, image: &mut PPM, color: &RGB) {
         let mut begin = b.clone();
         let mut end = e.clone();
         let mut steep = false;
@@ -53,7 +55,7 @@ pub mod renderer{
         }
     }
 
-    pub fn draw_triangle(p1: &PointInt, p2: &PointInt, p3: &PointInt, image: &mut PPM, color: &RGB) -> bool {
+    pub fn draw_triangle(p1: &Point3Int, p2: &Point3Int, p3: &Point3Int, image: &mut PPM, color: &RGB) -> bool {
         draw_line(p1, p2, image, color);
         draw_line(p2, p3, image, color);
         draw_line(p3, p1, image, color);
@@ -134,12 +136,14 @@ pub mod renderer{
                 // Only x, y, dimensions
                 let v0 = model.vertices.get(&cur_faces[k]).unwrap();
                 let v1 = model.vertices.get(&cur_faces[(k+1)%3]).unwrap();
-                let p1 = PointInt {
+                let p1 = Point3Int {
                     x: ((v0.x + offset)*image.width as f32/scale) as i32,
-                    y: ((v0.y + offset)*image.height as f32/scale) as i32};
-                let p2 = PointInt {
+                    y: ((v0.y + offset)*image.height as f32/scale) as i32,
+                    z: v0.z as i32};
+                let p2 = Point3Int {
                     x: ((v1.x + offset)*image.width as f32/scale) as i32,
-                    y: ((v1.y + offset)*image.height as f32/scale) as i32};
+                    y: ((v1.y + offset)*image.height as f32/scale) as i32,
+                    z: v1.z as i32};
                 draw_line(&p1, &p2, image, &color);
             }
         }
@@ -154,32 +158,54 @@ pub mod renderer{
         let width = image.width;
         let height = image.height;
 
+        // Returns vertex world & scaled coordinates
         let get_point = |vertex: u32| {
             let v = model.vertices.get(&vertex).unwrap();
-            PointInt {
+            let p3i = Point3Int {
                 x: ((v.x + offset)*width as f32/scale) as i32,
                 y: ((v.y + offset)*height as f32/scale) as i32,
-            }
+                z: v.z as i32,
+            };
+            let p3f = Point3 {
+                x: v.x,
+                y: v.y,
+                z: v.z,
+            };
+
+            (p3i, p3f)
         };
-        
+        // Returns triangle in world coordinates, and scaled one
+        let get_triangles = |i: usize| {
+            let (p1scaled, p1world) = get_point(model.faces[i].f1.v);
+            let (p2scaled, p2world) = get_point(model.faces[i].f2.v); 
+            let (p3scaled, p3world) = get_point(model.faces[i].f3.v);
+            let trf = TriangleFloat {
+                p1: p1world,
+                p2: p2world,
+                p3: p3world,
+            };
+            let tri = TriangleInt{
+                p1: p1scaled,
+                p2: p2scaled,
+                p3: p3scaled,
+            };
+
+            (trf, tri)
+        };
 
         for i in 0..model.faces.len() {
             // Take bended vertices, actually forming one face
-            let cur_face: TriangleInt = TriangleInt{
-                p1: get_point(model.faces[i].f1.v), 
-                p2: get_point(model.faces[i].f2.v), 
-                p3: get_point(model.faces[i].f3.v),
-            };
-            let red = RGB{red: 255, green: 0, blue: 0};
-            let green = RGB{red: 0, green: 255, blue: 0};
-            let blue = RGB{red: 0, green: 0, blue: 255};
-            let white = RGB{red: 255, green: 255, blue: 255};
-            //if i % 4 == 0       {draw_filled_triangle_f(&cur_face, image, &red);}
-            //else if i % 4 == 1  {draw_filled_triangle_f(&cur_face, image, &green);}
-            //else if i % 4 == 2  {draw_filled_triangle_f(&cur_face, image, &blue);}
-            //else                {draw_filled_triangle_f(&cur_face, image, &white);}
-            if is_filled {draw_filled_triangle_f(&cur_face, image, color);}
-            else {draw_triangle_t(&cur_face, image, color);}
+            let (face_in_world, cur_face) = get_triangles(i);
+            let light_dir = Vector3{x: 0., y: 0., z: -1.};
+            let normal = face_in_world.calc_normal_v();
+
+            let intensity = (normal * light_dir).to_float();
+
+            if intensity <= 0. {continue;}
+            
+            if is_filled {draw_filled_triangle(&cur_face, image, &(color * intensity));}
+            else {draw_triangle_t(&cur_face, image, &(color * intensity));}
+
         }
         true
     }
