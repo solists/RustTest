@@ -25,6 +25,17 @@ pub mod point {
         }
     }
 
+    impl core::ops::Add for PointInt {
+        type Output = PointInt;
+
+        fn add(self, other: PointInt) -> PointInt {
+            PointInt {
+                x: self.x + other.x,
+                y: self.y + other.y,
+            }
+        }
+    }
+
     impl core::ops::Sub for PointInt {
         type Output = PointInt;
 
@@ -45,13 +56,44 @@ pub mod point {
             }
         }
     }
-    impl core::ops::Mul for PointInt {
+    impl core::ops::Mul<PointInt> for PointInt {
         type Output = PointInt;
 
         fn mul(self, other: PointInt) -> PointInt {
             PointInt {
                 x: self.x * other.x,
                 y: self.y * other.y,
+            }
+        }
+    }
+    impl core::ops::Mul<f32> for PointInt {
+        type Output = PointInt;
+        
+        fn mul(self, other: f32) -> PointInt {
+            PointInt {
+                x: (self.x as f32 * other) as i32,
+                y: (self.y as f32 * other) as i32,
+            }
+        }
+    }
+
+    impl core::ops::Mul<&PointInt> for &PointInt {
+        type Output = PointInt;
+
+        fn mul(self, other: &PointInt) -> PointInt {
+            PointInt {
+                x: self.x * other.x,
+                y: self.y * other.y,
+            }
+        }
+    }
+    impl core::ops::Mul<f32> for &PointInt {
+        type Output = PointInt;
+        
+        fn mul(self, other: f32) -> PointInt {
+            PointInt {
+                x: (self.x as f32 * other) as i32,
+                y: (self.y as f32 * other) as i32,
             }
         }
     }
