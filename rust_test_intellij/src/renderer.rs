@@ -4,8 +4,8 @@ pub mod renderer{
     //use crate::ppm_encoder;
     use crate::obj_model::obj_model::Model;
     //use crate::geometry::geometry::Point3;
-    use crate::geometry::geometry::PointInt;
-    use crate::geometry::geometry::TriangleInt;
+    use crate::geometry::point::PointInt;
+    use crate::geometry::triangle::TriangleInt;
 
 
 

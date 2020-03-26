@@ -2,19 +2,18 @@ mod ppm_encoder;
 mod ppm_decoder;
 mod renderer;
 mod obj_model;
-mod triangle;
 mod geometry;
 use ppm_encoder::ppm_encoder::PPM;
 use ppm_encoder::ppm_encoder::RGB;
 use std::time::{Instant};
 //use ppm_decoder::ppm_decoder::read_image;
 //use renderer::renderer::draw_line;
-use geometry::geometry::Point3;
+use geometry::point::Point3;
 use crate::obj_model::obj_model::Model;
 //use crate::geometry::geometry::Point;
 //use crate::geometry::geometry::Triangle;
-use crate::geometry::geometry::TriangleInt;
-use crate::geometry::geometry::PointInt;
+use crate::geometry::triangle::TriangleInt;
+use crate::geometry::point::PointInt;
 
 fn main() {
     /*let mut img = match read_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm"){
@@ -48,7 +47,7 @@ fn main() {
     //renderer::renderer::draw_triangle_t(&tri, &mut image, &white);
     //renderer::renderer::draw_triangle(&a, &b, &in_p, &mut image, &white);
 
-    for _i in 0..100_000_000 {
+    for _i in 0..100_000_00 {
         //test_o_max_coord(obj_path, &model);
         
         //let mut model = Model::new();
@@ -62,8 +61,8 @@ fn main() {
         //let a = PointInt{x: 23, y: 15};
         //let b = PointInt{x: 18, y: 5};
         //let c = &a + &b;
-        let in_p = PointInt{x: _i, y: 2};
-        let isin = triangle::triangle::in_triangle(&in_p, &tr);
+        let in_p = PointInt{x: _i, y: 1};
+        let isin = tr.in_triangle_f(&in_p);
         if isin {c += 1;}
         
         //renderer::renderer::draw_point(&PointInt{x: in_p.x * 10, y: in_p.y * 10}, &mut image, &red);

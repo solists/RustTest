@@ -4,7 +4,7 @@ pub mod obj_model{
     use std::io::{BufReader, BufRead};
     use std::fs::File;
     use std::string::String;
-    use crate::geometry::geometry::Point3;
+    use crate::geometry::point::Point3;
 
     pub struct Model {
         pub vertices: HashMap<u32, Point3>,
