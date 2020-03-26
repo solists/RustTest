@@ -164,9 +164,9 @@ pub mod point {
         }
         pub fn to_int(&self) -> Point3<i32> {
             Point3 {
-                x: self.x as i32,
-                y: self.y as i32,
-                z: self.z as i32,
+                x: (self.x + 0.5) as i32,
+                y: (self.y + 0.5) as i32,
+                z: (self.z + 0.5) as i32,
             }
         }
     }

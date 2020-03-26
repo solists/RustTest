@@ -133,9 +133,11 @@ pub mod renderer{
 			for j in a.x..=b.x {
                 // Attention, due to int casts p1.y+i != a.y
                 let phi = if b.x == a.x { 1. } else { (j as f32 - &af.x)/(&bf.x - af.x) };
-                let p = ((&af + &((&bf - &af)*phi)) ).to_int();
+                let mut p = ((&af + &((&bf - &af)*phi)) ).to_int();
+                // Due to cast errors, do next, to fill the holes in image:
+                p.x = j; p.y = p1.y+i;
                 let idx = p.x + p.y * image.width as i32;
-                if z_buffer.data[idx as usize] <= p.z  {
+                if z_buffer.data[idx as usize] < p.z  {
                     z_buffer.data[idx as usize] = p.z;
                     draw_point(&Point2{x: j, y: p1.y + i}, image, color);
                 }
@@ -187,7 +189,7 @@ pub mod renderer{
                 y: ((v.y + offset)*height as f32/scale) as i32,
                 // So if it is casted to int, we multiply it to distinguish
                 // two different float values further, int due to faster calculations
-                z: (v.z * 2.) as i32,
+                z: (v.z) as i32,
             };
             let p3f = Point3 {
                 x: v.x,
