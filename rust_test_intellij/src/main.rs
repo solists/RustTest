@@ -13,8 +13,8 @@ use geometry::point::Point3;
 use crate::obj_model::obj_model::Model;
 //use crate::geometry::geometry::Point;
 //use crate::geometry::geometry::Triangle;
-use crate::geometry::triangle::TriangleInt;
-use crate::geometry::point::PointInt;
+use crate::geometry::triangle::Triangle;
+use crate::geometry::point::Point2;
 use crate::geometry::vector::Vector3;
 
 fn main() {
@@ -32,7 +32,7 @@ fn main() {
     let white = RGB{red: 255, green: 255, blue: 255};
 
     let obj_path_linx = "/home/semen/Prog/RustTemp/RustTest/rust_test_intellij/obj/1.obj";
-    let obj_path_win = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/obj/3.obj";
+    let obj_path_win = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/obj/2.obj";
     let img_path_linx = "/home/semen/Prog/RustTemp/RustTest/rust_test_intellij/src/temp.ppm";
     let img_path_win = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm";
 
@@ -76,6 +76,12 @@ fn main() {
     }
     println!("Time in ms: {}", n.elapsed().as_millis());
 
+    let v = Vector3{x: 5., y: 2., z: 3.};
+    let l = Vector3{x: -4., y: 9., z: 0.};
+    let k = v.calc_cross_product(&l);
+
+    println!("{}, {}, {} : {}", k.x, k.y, k.z, k.to_float());
+
     image.write_image(&img_path_win).expect("Error while writing an image!");
 
     println!("np: {}", c);
@@ -83,6 +89,6 @@ fn main() {
 }
 
 
-fn test_o_max_coord(obj_path: &str, model: &Model) -> Point3 {
+fn test_o_max_coord(obj_path: &str, model: &Model) -> Point3<f32> {
     model.max_coord()
 }

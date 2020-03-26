@@ -4,15 +4,15 @@ pub mod renderer{
     //use crate::ppm_encoder;
     use crate::obj_model::obj_model::Model;
     //use crate::geometry::geometry::Point3;
-    use crate::geometry::point::{PointInt, Point3Int, Point3};
-    use crate::geometry::triangle::{TriangleInt, TriangleFloat};
+    use crate::geometry::point::{Point2, Point3};
+    use crate::geometry::triangle::{Triangle};
     use crate::geometry::vector::Vector3;
     //use crate::geometry::vector;
 
 
 
     // Bresenham’s line algorithm
-    pub fn draw_line(b: &Point3Int, e: &Point3Int, image: &mut PPM, color: &RGB) {
+    pub fn draw_line(b: &Point3<i32>, e: &Point3<i32>, image: &mut PPM, color: &RGB) {
         let mut begin = b.clone();
         let mut end = e.clone();
         let mut steep = false;
@@ -55,7 +55,7 @@ pub mod renderer{
         }
     }
 
-    pub fn draw_triangle(p1: &Point3Int, p2: &Point3Int, p3: &Point3Int, image: &mut PPM, color: &RGB) -> bool {
+    pub fn draw_triangle(p1: &Point3<i32>, p2: &Point3<i32>, p3: &Point3<i32>, image: &mut PPM, color: &RGB) -> bool {
         draw_line(p1, p2, image, color);
         draw_line(p2, p3, image, color);
         draw_line(p3, p1, image, color);
@@ -63,7 +63,7 @@ pub mod renderer{
         true
     }
 
-    pub fn draw_triangle_t(tr: &TriangleInt, image: &mut PPM, color: &RGB) -> bool {
+    pub fn draw_triangle_t(tr: &Triangle<i32>, image: &mut PPM, color: &RGB) -> bool {
         draw_line(&tr.p1, &tr.p2, image, color);
         draw_line(&tr.p2, &tr.p3, image, color);
         draw_line(&tr.p3, &tr.p1, image, color);
@@ -71,7 +71,7 @@ pub mod renderer{
         true
     }
 
-    pub fn draw_filled_triangle(tr: &TriangleInt, image: &mut PPM, color: &RGB) -> bool {
+    pub fn draw_filled_triangle(tr: &Triangle<i32>, image: &mut PPM, color: &RGB) -> bool {
         if tr.p1.x == tr.p2.x && tr.p2.x == tr.p3.x {return false;}
         if tr.p1.y == tr.p2.y && tr.p2.y == tr.p3.y {return false;}
 
@@ -82,7 +82,7 @@ pub mod renderer{
 
         for x in x_min..=x_max {
             for y in y_min..=y_max {
-                let p = PointInt{x: x, y: y};
+                let p = Point2{x: x, y: y};
                 if tr.in_triangle_f(&p) {
                     draw_point(&p, image, color);
                 }
@@ -92,7 +92,7 @@ pub mod renderer{
     }
 
     // Twice faster than draw_filled_triangle method
-    pub fn draw_filled_triangle_f(tr: &TriangleInt, image: &mut PPM, color: &RGB) -> bool {
+    pub fn draw_filled_triangle_f(tr: &Triangle<i32>, image: &mut PPM, color: &RGB) -> bool {
         if tr.p1.x == tr.p2.x && tr.p2.x == tr.p3.x {return false;}
         if tr.p1.y == tr.p2.y && tr.p2.y == tr.p3.y {return false;}
 
@@ -117,7 +117,7 @@ pub mod renderer{
 			if a.x > b.x { std::mem::swap(&mut a, &mut b); }
 			for j in a.x..=b.x {
                 // Attention, due to int casts p1.y+i != a.y
-                draw_point(&PointInt{x: j, y: p1.y + i}, image, color);
+                draw_point(&Point2{x: j, y: p1.y + i}, image, color);
 			}
         }
         true
@@ -136,11 +136,11 @@ pub mod renderer{
                 // Only x, y, dimensions
                 let v0 = model.vertices.get(&cur_faces[k]).unwrap();
                 let v1 = model.vertices.get(&cur_faces[(k+1)%3]).unwrap();
-                let p1 = Point3Int {
+                let p1 = Point3 {
                     x: ((v0.x + offset)*image.width as f32/scale) as i32,
                     y: ((v0.y + offset)*image.height as f32/scale) as i32,
                     z: v0.z as i32};
-                let p2 = Point3Int {
+                let p2 = Point3 {
                     x: ((v1.x + offset)*image.width as f32/scale) as i32,
                     y: ((v1.y + offset)*image.height as f32/scale) as i32,
                     z: v1.z as i32};
@@ -161,7 +161,7 @@ pub mod renderer{
         // Returns vertex world & scaled coordinates
         let get_point = |vertex: u32| {
             let v = model.vertices.get(&vertex).unwrap();
-            let p3i = Point3Int {
+            let p3i = Point3 {
                 x: ((v.x + offset)*width as f32/scale) as i32,
                 y: ((v.y + offset)*height as f32/scale) as i32,
                 z: v.z as i32,
@@ -179,12 +179,12 @@ pub mod renderer{
             let (p1scaled, p1world) = get_point(model.faces[i].f1.v);
             let (p2scaled, p2world) = get_point(model.faces[i].f2.v); 
             let (p3scaled, p3world) = get_point(model.faces[i].f3.v);
-            let trf = TriangleFloat {
+            let trf = Triangle {
                 p1: p1world,
                 p2: p2world,
                 p3: p3world,
             };
-            let tri = TriangleInt{
+            let tri = Triangle {
                 p1: p1scaled,
                 p2: p2scaled,
                 p3: p3scaled,
@@ -194,23 +194,21 @@ pub mod renderer{
         };
 
         for i in 0..model.faces.len() {
-            // Take bended vertices, actually forming one face
             let (face_in_world, cur_face) = get_triangles(i);
-            let light_dir = Vector3{x: 0., y: 0., z: -1.};
+            let light_dir = Vector3{x: 0., y: 0., z: 1.};
             let normal = face_in_world.calc_normal_v();
 
             let intensity = (normal * light_dir).to_float();
 
             if intensity <= 0. {continue;}
             
-            if is_filled {draw_filled_triangle(&cur_face, image, &(color * intensity));}
+            if is_filled {draw_filled_triangle_f(&cur_face, image, &(color * intensity));}
             else {draw_triangle_t(&cur_face, image, &(color * intensity));}
-
         }
         true
     }
 
-    pub fn draw_point(point: &PointInt, image: &mut PPM, color: &RGB) {
+    pub fn draw_point(point: &Point2<i32>, image: &mut PPM, color: &RGB) {
         image.set_pixel(point.x as u32, point.y as u32, color);
     }
 

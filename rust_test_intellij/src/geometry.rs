@@ -1,37 +1,145 @@
 pub mod point {
     use crate::geometry::vector::Vector3;
-    pub struct PointFloat {
-        pub x: f32,
-        pub y: f32,
+    use core::ops::Add;
+    use core::ops::Sub;
+    use core::ops::Mul;
+
+    pub struct Point2<T> {
+        pub x: T,
+        pub y: T,
+    }
+    #[derive(Debug)]
+    pub struct Point3<T> {
+        pub x: T,
+        pub y: T,
+        pub z: T,
     }
 
-    pub struct PointInt {
-        pub x: i32,
-        pub y: i32,
-    }
 
-    pub struct Point3 {
-        pub x: f32,
-        pub y: f32,
-        pub z: f32,
-    }
-    pub struct Point3Int {
-        pub x: i32,
-        pub y: i32,
-        pub z: i32,
-    }
 
-    impl Point3 {
-        pub fn toVector3(&self) -> Vector3 {
-            Vector3 {
-                x: self.x,
-                y: self.y,
-                z: self.z,
+    // Point2 operators****************************
+    impl<T> Add for &Point2<T>
+    where T: Add<Output=T> + Copy {
+        type Output = Point2<T>;
+
+        fn add(self, other: &Point2<T>) -> Point2<T> {
+            Point2 {
+                x: self.x + other.x,
+                y: self.y + other.y,
             }
         }
     }
-    impl Point3Int {
-        pub fn toVector3(&self) -> Vector3 {
+    impl<T> Add for Point2<T>
+    where T: Add<Output=T> + Copy {
+        type Output = Point2<T>;
+
+        fn add(self, other: Point2<T>) -> Point2<T> {
+            Point2 {
+                x: self.x + other.x,
+                y: self.y + other.y,
+            }
+        }
+    }
+    impl<T> Sub for Point2<T> 
+    where T: Sub<Output=T> + Copy {
+        type Output = Point2<T>;
+
+        fn sub(self, other: Point2<T>) -> Point2<T> {
+            Point2 {
+                x: self.x - other.x,
+                y: self.y - other.y,
+            }
+        }
+    }
+    impl<T> Sub for &Point2<T> 
+    where T: Sub<Output=T> + Copy {
+        type Output = Point2<T>;
+
+        fn sub(self, other: &Point2<T>) -> Point2<T> {
+            Point2 {
+                x: self.x - other.x,
+                y: self.y - other.y,
+            }
+        }
+    }
+    impl<T> Mul for Point2<T> 
+    where T: Mul<Output=T> + Copy {
+        type Output = Point2<T>;
+
+        fn mul(self, other: Point2<T>) -> Point2<T> {
+            Point2 {
+                x: self.x * other.x,
+                y: self.y * other.y,
+            }
+        }
+    }
+    impl<T> Mul for &Point2<T> 
+    where T: Mul<Output=T> + Copy {
+        type Output = Point2<T>;
+
+        fn mul(self, other: &Point2<T>) -> Point2<T> {
+            Point2 {
+                x: self.x * other.x,
+                y: self.y * other.y,
+            }
+        }
+    }
+    impl Mul<f32> for &Point2<i32> 
+    {
+        type Output = Point2<i32>;
+
+        fn mul(self, other: f32) -> Point2<i32> {
+            Point2 {
+                x: (self.x as f32 * other) as i32,
+                y: (self.y as f32 * other) as i32,
+            }
+        }
+    }
+    impl Mul<f32> for Point2<i32> 
+    {
+        type Output = Point2<i32>;
+
+        fn mul(self, other: f32) -> Point2<i32> {
+            Point2 {
+                x: (self.x as f32 * other) as i32,
+                y: (self.y as f32 * other) as i32,
+            }
+        }
+    }
+    impl Mul<f32> for &Point2<f32> 
+    {
+        type Output = Point2<f32>;
+
+        fn mul(self, other: f32) -> Point2<f32> {
+            Point2 {
+                x: self.x * other,
+                y: self.y * other,
+            }
+        }
+    }
+    impl Mul<f32> for Point2<f32> 
+    {
+        type Output = Point2<f32>;
+
+        fn mul(self, other: f32) -> Point2<f32> {
+            Point2 {
+                x: self.x * other,
+                y: self.y * other,
+            }
+        }
+    }
+    impl<T> Point2<T> 
+    where T: Copy {
+        pub fn clone(&self) -> Point2<T> {
+            Point2 {
+                x: self.x,
+                y: self.y,
+            }
+        }
+    }
+    // Point3 operators********************
+    impl Point3<i32> {
+        pub fn to_vector3(&self) -> Vector3 {
             Vector3 {
                 x: self.x as f32,
                 y: self.y as f32,
@@ -39,226 +147,136 @@ pub mod point {
             }
         }
     }
-
-    impl core::ops::Add for &Point3 {
-        type Output = Point3;
-
-        fn add(self, other: &Point3) -> Point3 {
-            Point3 {
-                x: self.x + other.x,
-                y: self.y + other.y,
-                z: self.z + other.z,
-            }
-        }
-    }
-
-    impl core::ops::Sub for &Point3 {
-        type Output = Point3;
-
-        fn sub(self, other: &Point3) -> Point3 {
-            Point3 {
-                x: self.x - other.x,
-                y: self.y - other.y,
-                z: self.z - other.z,
-            }
-        }
-    }
-
-    impl core::ops::Add for &PointInt {
-        type Output = PointInt;
-
-        fn add(self, other: &PointInt) -> PointInt {
-            PointInt {
-                x: self.x + other.x,
-                y: self.y + other.y,
-            }
-        }
-    }
-
-    impl core::ops::Add for PointInt {
-        type Output = PointInt;
-
-        fn add(self, other: PointInt) -> PointInt {
-            PointInt {
-                x: self.x + other.x,
-                y: self.y + other.y,
-            }
-        }
-    }
-
-    impl core::ops::Sub for PointInt {
-        type Output = PointInt;
-
-        fn sub(self, other: PointInt) -> PointInt {
-            PointInt {
-                x: self.x - other.x,
-                y: self.y - other.y,
-            }
-        }
-    }
-    impl core::ops::Sub for &PointInt {
-        type Output = PointInt;
-
-        fn sub(self, other: &PointInt) -> PointInt {
-            PointInt {
-                x: self.x - other.x,
-                y: self.y - other.y,
-            }
-        }
-    }
-    impl core::ops::Mul<PointInt> for PointInt {
-        type Output = PointInt;
-
-        fn mul(self, other: PointInt) -> PointInt {
-            PointInt {
-                x: self.x * other.x,
-                y: self.y * other.y,
-            }
-        }
-    }
-    impl core::ops::Mul<f32> for PointInt {
-        type Output = PointInt;
-        
-        fn mul(self, other: f32) -> PointInt {
-            PointInt {
-                x: (self.x as f32 * other) as i32,
-                y: (self.y as f32 * other) as i32,
-            }
-        }
-    }
-
-    impl core::ops::Mul<&PointInt> for &PointInt {
-        type Output = PointInt;
-
-        fn mul(self, other: &PointInt) -> PointInt {
-            PointInt {
-                x: self.x * other.x,
-                y: self.y * other.y,
-            }
-        }
-    }
-    impl core::ops::Mul<f32> for &PointInt {
-        type Output = PointInt;
-        
-        fn mul(self, other: f32) -> PointInt {
-            PointInt {
-                x: (self.x as f32 * other) as i32,
-                y: (self.y as f32 * other) as i32,
-            }
-        }
-    }
-
-    impl PointInt {
-        pub fn clone(&self) -> PointInt {
-            PointInt {
+    impl Point3<f32> {
+        pub fn to_vector3(&self) -> Vector3 {
+            Vector3 {
                 x: self.x,
                 y: self.y,
-            }
-        }
-        pub fn toVector3(&self) -> Vector3 {
-            Vector3 {
-                x: self.x as f32,
-                y: self.y as f32,
-                z: 0.,
+                z: self.z,
             }
         }
     }
+    impl<T> core::ops::Add for Point3<T>
+    where T: Add<Output=T> + Copy {
+        type Output = Point3<T>;
 
-    impl core::ops::Add for &Point3Int {
-        type Output = Point3Int;
-
-        fn add(self, other: &Point3Int) -> Point3Int {
-            Point3Int {
+        fn add(self, other: Point3<T>) -> Point3<T> {
+            Point3 {
                 x: self.x + other.x,
                 y: self.y + other.y,
                 z: self.z + other.z,
             }
         }
     }
+    impl<T> core::ops::Add for &Point3<T>
+    where T: Add<Output=T> + Copy {
+        type Output = Point3<T>;
 
-    impl core::ops::Add for Point3Int {
-        type Output = Point3Int;
-
-        fn add(self, other: Point3Int) -> Point3Int {
-            Point3Int {
+        fn add(self, other: &Point3<T>) -> Point3<T> {
+            Point3 {
                 x: self.x + other.x,
                 y: self.y + other.y,
                 z: self.z + other.z,
             }
         }
     }
+    impl<T> core::ops::Sub for Point3<T>
+    where T: Sub<Output=T> + Copy {
+        type Output = Point3<T>;
 
-    impl core::ops::Sub for Point3Int {
-        type Output = Point3Int;
-
-        fn sub(self, other: Point3Int) -> Point3Int {
-            Point3Int {
+        fn sub(self, other: Point3<T>) -> Point3<T> {
+            Point3 {
                 x: self.x - other.x,
                 y: self.y - other.y,
                 z: self.z - other.z,
             }
         }
     }
-    impl core::ops::Sub for &Point3Int {
-        type Output = Point3Int;
+    impl<T> core::ops::Sub for &Point3<T>
+    where T: Sub<Output=T> + Copy {
+        type Output = Point3<T>;
 
-        fn sub(self, other: &Point3Int) -> Point3Int {
-            Point3Int {
+        fn sub(self, other: &Point3<T>) -> Point3<T> {
+            Point3 {
                 x: self.x - other.x,
                 y: self.y - other.y,
-                z: self.y - other.z,
+                z: self.z - other.z,
             }
         }
     }
-    impl core::ops::Mul<Point3Int> for Point3Int {
-        type Output = Point3Int;
+    impl<T> core::ops::Mul for Point3<T>
+    where T: Mul<Output=T> + Copy {
+        type Output = Point3<T>;
 
-        fn mul(self, other: Point3Int) -> Point3Int {
-            Point3Int {
+        fn mul(self, other: Point3<T>) -> Point3<T> {
+            Point3 {
                 x: self.x * other.x,
                 y: self.y * other.y,
                 z: self.z * other.z,
             }
         }
     }
-    impl core::ops::Mul<f32> for Point3Int {
-        type Output = Point3Int;
-        
-        fn mul(self, other: f32) -> Point3Int {
-            Point3Int {
-                x: (self.x as f32 * other) as i32,
-                y: (self.y as f32 * other) as i32,
-                z: (self.z as f32 * other) as i32,
-            }
-        }
-    }
+    impl<T> core::ops::Mul for &Point3<T>
+    where T: Mul<Output=T> + Copy {
+        type Output = Point3<T>;
 
-    impl core::ops::Mul<&Point3Int> for &Point3Int {
-        type Output = Point3Int;
-
-        fn mul(self, other: &Point3Int) -> Point3Int {
-            Point3Int {
+        fn mul(self, other: &Point3<T>) -> Point3<T> {
+            Point3 {
                 x: self.x * other.x,
                 y: self.y * other.y,
-                z: self.z * other.y,
+                z: self.z * other.z,
             }
         }
     }
-    impl core::ops::Mul<f32> for &Point3Int {
-        type Output = Point3Int;
-        
-        fn mul(self, other: f32) -> Point3Int {
-            Point3Int {
+    impl core::ops::Mul<f32> for &Point3<i32> {
+        type Output = Point3<i32>;
+
+        fn mul(self, other: f32) -> Point3<i32> {
+            Point3 {
                 x: (self.x as f32 * other) as i32,
                 y: (self.y as f32 * other) as i32,
                 z: (self.z as f32 * other) as i32,
             }
         }
     }
+    impl core::ops::Mul<f32> for Point3<i32> {
+        type Output = Point3<i32>;
 
-    impl Point3Int {
-        pub fn clone(&self) -> Point3Int {
-            Point3Int {
+        fn mul(self, other: f32) -> Point3<i32> {
+            Point3 {
+                x: (self.x as f32 * other) as i32,
+                y: (self.y as f32 * other) as i32,
+                z: (self.z as f32 * other) as i32,
+            }
+        }
+    }
+    impl core::ops::Mul<f32> for &Point3<f32> {
+        type Output = Point3<f32>;
+
+        fn mul(self, other: f32) -> Point3<f32> {
+            Point3 {
+                x: self.x * other,
+                y: self.y * other,
+                z: self.z * other,
+            }
+        }
+    }
+    impl core::ops::Mul<f32> for Point3<f32> {
+        type Output = Point3<f32>;
+
+        fn mul(self, other: f32) -> Point3<f32> {
+            Point3 {
+                x: self.x * other,
+                y: self.y * other,
+                z: self.z * other,
+            }
+        }
+    }
+
+    impl<T> Point3<T> 
+    where T: Copy {
+        pub fn clone(&self) -> Point3<T> {
+            Point3 {
                 x: self.x,
                 y: self.y,
                 z: self.z,
@@ -268,31 +286,29 @@ pub mod point {
 }
 
 pub mod triangle {
-    use crate::geometry::point::{PointInt, Point3, Point3Int};
+    use crate::geometry::point::{Point2, Point3};
     use crate::geometry::vector::{Vector3};
 
-    pub struct TriangleFloat {
-        pub p1: Point3,
-        pub p2: Point3,
-        pub p3: Point3,
+    //type PointInt = Point2<i32>;
+
+    #[derive(Debug)]
+    pub struct Triangle<T> {
+        pub p1: Point3<T>,
+        pub p2: Point3<T>,
+        pub p3: Point3<T>,
     }
-    impl TriangleFloat {
+
+    impl Triangle<f32> {
         pub fn calc_normal_v(&self) -> Vector3 {
-            let v1 = (&self.p2 - &self.p1).toVector3();
-            let v2 = (&self.p3 - &self.p1).toVector3();
+            let v1 = (&self.p2 - &self.p1).to_vector3();
+            let v2 = (&self.p3 - &self.p1).to_vector3();
 
             (v1.calc_cross_product(&v2)).normalize()
         }
     }
 
-    pub struct TriangleInt {
-        pub p1: Point3Int,
-        pub p2: Point3Int,
-        pub p3: Point3Int,
-    }
-
-    impl TriangleInt {
-        pub fn in_triangle(&self, p: &Point3Int) -> bool {
+    impl Triangle<i32> {
+        pub fn in_triangle(&self, p: &Point3<i32>) -> bool {
             let tp = p;
             let tp = tp - &self.p1;
     
@@ -311,7 +327,7 @@ pub mod triangle {
         }
     
         // Faster algo ~25%
-        pub fn in_triangle_f(&self, p: &PointInt) -> bool {
+        pub fn in_triangle_f(&self, p: &Point2<i32>) -> bool {
             let a_side = (self.p1.y - self.p2.y) * p.x + (self.p2.x - self.p1.x) * p.y + (self.p1.x * self.p2.y - self.p2.x * self.p1.y);
             let b_side = (self.p2.y - self.p3.y) * p.x + (self.p3.x - self.p2.x) * p.y + (self.p2.x * self.p3.y - self.p3.x * self.p2.y);
             let c_side = (self.p3.y - self.p1.y) * p.x + (self.p1.x - self.p3.x) * p.y + (self.p3.x * self.p1.y - self.p1.x * self.p3.y);
@@ -320,8 +336,8 @@ pub mod triangle {
         }
 
         pub fn calc_normal_v(&self) -> Vector3 {
-            let v1 = (&self.p2 - &self.p1).toVector3();
-            let v2 = (&self.p3 - &self.p1).toVector3();
+            let v1 = (&self.p2 - &self.p1).to_vector3();
+            let v2 = (&self.p3 - &self.p1).to_vector3();
 
             (v2.calc_cross_product(&v1)).normalize()
         }
@@ -402,6 +418,51 @@ pub mod vector {
                 x: self.x * other.x,
                 y: self.y * other.y,
                 z: self.z * other.z,
+            }
+        }
+    }
+    
+    impl std::ops::Add<Vector3> for Vector3 {
+        type Output = Vector3;
+        
+        fn add(self, other: Vector3) -> Vector3 {
+            Vector3{
+                x: self.x + other.x,
+                y: self.y + other.y,
+                z: self.z + other.z,
+            }
+        }
+    }
+    impl std::ops::Add<&Vector3> for Vector3 {
+        type Output = Vector3;
+        
+        fn add(self, other: &Vector3) -> Vector3 {
+            Vector3{
+                x: self.x + other.x,
+                y: self.y + other.y,
+                z: self.z + other.z,
+            }
+        }
+    }
+    impl std::ops::Add<&Vector3> for &Vector3 {
+        type Output = Vector3;
+        
+        fn add(self, other: &Vector3) -> Vector3 {
+            Vector3{
+                x: self.x + other.x,
+                y: self.y + other.y,
+                z: self.z + other.z,
+            }
+        }
+    }
+    impl std::ops::Add<Vector3> for &Vector3 {
+        type Output = Vector3;
+        
+        fn add(self, other: Vector3) -> Vector3 {
+            Vector3{
+                x: self.x + other.x,
+                y: self.y + other.y,
+                z: self.z + other.z,
             }
         }
     }
