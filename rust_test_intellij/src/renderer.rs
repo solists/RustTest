@@ -9,6 +9,19 @@ pub mod renderer{
     use crate::geometry::vector::Vector3;
     //use crate::geometry::vector;
 
+    // Buffer used to determine which object to render, if they overlapping each other
+    pub struct ZBuffer {
+        pub data: Vec<i32>
+    }
+
+    impl ZBuffer {
+        pub fn new(size: i32) -> ZBuffer {
+            ZBuffer {
+                data: vec![i32::min_value(); size as usize],
+            }
+        }
+    }
+
 
 
     // Bresenham’s line algorithm
@@ -92,7 +105,7 @@ pub mod renderer{
     }
 
     // Twice faster than draw_filled_triangle method
-    pub fn draw_filled_triangle_f(tr: &Triangle<i32>, image: &mut PPM, color: &RGB) -> bool {
+    pub fn draw_filled_triangle_f(tr: &Triangle<i32>, image: &mut PPM, color: &RGB, z_buffer: &mut ZBuffer) -> bool {
         if tr.p1.x == tr.p2.x && tr.p2.x == tr.p3.x {return false;}
         if tr.p1.y == tr.p2.y && tr.p2.y == tr.p3.y {return false;}
 
@@ -114,10 +127,18 @@ pub mod renderer{
             let beta = (i as f32 - temp_coeff) / segment_height;
             let mut a = &p1 + &((&p3 - &p1) * alpha);
             let mut b = if second_half {&p2 + &((&p3 - &p2) * beta) } else { &p1 + &((&p2 - &p1) * beta)};
-			if a.x > b.x { std::mem::swap(&mut a, &mut b); }
+            if a.x > b.x { std::mem::swap(&mut a, &mut b); }
+            let af = a.to_float();
+            let bf = b.to_float();
 			for j in a.x..=b.x {
                 // Attention, due to int casts p1.y+i != a.y
-                draw_point(&Point2{x: j, y: p1.y + i}, image, color);
+                let phi = if b.x == a.x { 1. } else { (j as f32 - &af.x)/(&bf.x - af.x) };
+                let p = ((&af + &((&bf - &af)*phi)) ).to_int();
+                let idx = p.x + p.y * image.width as i32;
+                if z_buffer.data[idx as usize] <= p.z  {
+                    z_buffer.data[idx as usize] = p.z;
+                    draw_point(&Point2{x: j, y: p1.y + i}, image, color);
+                }
 			}
         }
         true
@@ -150,7 +171,7 @@ pub mod renderer{
         true
     }
 
-    pub fn print_obj_in_triangles(model: &Model, image: &mut PPM, color: &RGB, is_filled: bool) -> bool {
+    pub fn print_obj_in_triangles(model: &Model, image: &mut PPM, color: &RGB, is_filled: bool, z_buffer: &mut ZBuffer) -> bool {
         // Scale object to fit the screen according to the next properties
         let max_p = model.max_coord();
         let offset: f32 = max_p.x.max(max_p.y);
@@ -164,7 +185,9 @@ pub mod renderer{
             let p3i = Point3 {
                 x: ((v.x + offset)*width as f32/scale) as i32,
                 y: ((v.y + offset)*height as f32/scale) as i32,
-                z: v.z as i32,
+                // So if it is casted to int, we multiply it to distinguish
+                // two different float values further, int due to faster calculations
+                z: (v.z * 2.) as i32,
             };
             let p3f = Point3 {
                 x: v.x,
@@ -202,7 +225,7 @@ pub mod renderer{
 
             if intensity <= 0. {continue;}
             
-            if is_filled {draw_filled_triangle_f(&cur_face, image, &(color * intensity));}
+            if is_filled {draw_filled_triangle_f(&cur_face, image, &(color * intensity), z_buffer);}
             else {draw_triangle_t(&cur_face, image, &(color * intensity));}
         }
         true

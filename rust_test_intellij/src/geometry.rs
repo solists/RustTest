@@ -146,6 +146,13 @@ pub mod point {
                 z: self.z as f32,
             }
         }
+        pub fn to_float(&self) -> Point3<f32> {
+            Point3 {
+                x: self.x as f32,
+                y: self.y as f32,
+                z: self.z as f32,
+            }
+        }
     }
     impl Point3<f32> {
         pub fn to_vector3(&self) -> Vector3 {
@@ -153,6 +160,13 @@ pub mod point {
                 x: self.x,
                 y: self.y,
                 z: self.z,
+            }
+        }
+        pub fn to_int(&self) -> Point3<i32> {
+            Point3 {
+                x: self.x as i32,
+                y: self.y as i32,
+                z: self.z as i32,
             }
         }
     }

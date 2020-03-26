@@ -16,6 +16,7 @@ use crate::obj_model::obj_model::Model;
 use crate::geometry::triangle::Triangle;
 use crate::geometry::point::Point2;
 use crate::geometry::vector::Vector3;
+use crate::renderer::renderer::ZBuffer;
 
 fn main() {
     /*let mut img = match read_image("U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm"){
@@ -31,9 +32,9 @@ fn main() {
     let blue = RGB{red: 0, green: 0, blue: 255};
     let white = RGB{red: 255, green: 255, blue: 255};
 
-    let obj_path_linx = "/home/semen/Prog/RustTemp/RustTest/rust_test_intellij/obj/1.obj";
+    let obj_path_linx = "/home/semen/Prog/RustTemp/RustTest/2.obj";
     let obj_path_win = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/obj/2.obj";
-    let img_path_linx = "/home/semen/Prog/RustTemp/RustTest/rust_test_intellij/src/temp.ppm";
+    let img_path_linx = "/home/semen/Prog/RustTemp/RustTest/temp.ppm";
     let img_path_win = "U:/Users/Semen/Documents/RustTest/rust_test_intellij/src/temp.ppm";
 
     
@@ -42,7 +43,7 @@ fn main() {
     let mut image = PPM::new(1000, 1000, 255);
 
     let mut model = Model::new();
-    model.read_obj(obj_path_win);
+    model.read_obj(obj_path_linx);
 
     /*let tri = TriangleInt{
         p1: PointInt{x: 10, y: 20},
@@ -54,8 +55,8 @@ fn main() {
     let n = Instant::now();
     for _i in 0..1 {
         //test_o_max_coord(obj_path, &model);
-        
-        renderer::renderer::print_obj_in_triangles(&model, &mut image, &white, true);
+        let mut z_buffer = ZBuffer::new((image.width * image.height) as i32);
+        renderer::renderer::print_obj_in_triangles(&model, &mut image, &white, true, &mut z_buffer);
         //renderer::renderer::print_obj_in_lines(&model, &mut image, &red);
         //let tr = TriangleInt{
         //    p1: PointInt{x: 0, y: 1},
@@ -82,13 +83,13 @@ fn main() {
 
     println!("{}, {}, {} : {}", k.x, k.y, k.z, k.to_float());
 
-    image.write_image(&img_path_win).expect("Error while writing an image!");
+    image.write_image(&img_path_linx).expect("Error while writing an image!");
 
     println!("np: {}", c);
     
 }
 
 
-fn test_o_max_coord(obj_path: &str, model: &Model) -> Point3<f32> {
+fn test_o_max_coord(model: &Model) -> Point3<f32> {
     model.max_coord()
 }
