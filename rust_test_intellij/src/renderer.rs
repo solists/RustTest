@@ -84,7 +84,7 @@ pub mod renderer{
         true
     }
 
-    pub fn draw_filled_triangle(tr: &Triangle<i32>, image: &mut PPM, color: &RGB) -> bool {
+    pub fn draw_filled_triangle(tr: &Triangle<i32>, image: &mut PPM, color: &RGB, z_buffer: &mut ZBuffer) -> bool {
         if tr.p1.x == tr.p2.x && tr.p2.x == tr.p3.x {return false;}
         if tr.p1.y == tr.p2.y && tr.p2.y == tr.p3.y {return false;}
 

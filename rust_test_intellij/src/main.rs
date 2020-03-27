@@ -53,7 +53,7 @@ fn main() {
     //renderer::renderer::draw_triangle_t(&tri, &mut image, &white);
     //renderer::renderer::draw_triangle(&a, &b, &in_p, &mut image, &white);
     let n = Instant::now();
-    for _i in 0..1 {
+    for _i in 0..100 {
         //test_o_max_coord(obj_path, &model);
         let mut z_buffer = ZBuffer::new((image.width * image.height) as i32);
         renderer::renderer::print_obj_in_triangles(&model, &mut image, &white, true, &mut z_buffer);

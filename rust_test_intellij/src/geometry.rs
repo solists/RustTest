@@ -340,7 +340,7 @@ pub mod triangle {
             return w1 >= 0. && w2 >= 0. && (w1 + w2) <= 1.;
         }
     
-        // Faster algo ~25%
+        // Faster algo ~25, edge functions
         pub fn in_triangle_f(&self, p: &Point2<i32>) -> bool {
             let a_side = (self.p1.y - self.p2.y) * p.x + (self.p2.x - self.p1.x) * p.y + (self.p1.x * self.p2.y - self.p2.x * self.p1.y);
             let b_side = (self.p2.y - self.p3.y) * p.x + (self.p3.x - self.p2.x) * p.y + (self.p2.x * self.p3.y - self.p3.x * self.p2.y);
