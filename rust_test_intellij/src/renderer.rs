@@ -105,7 +105,7 @@ pub mod renderer{
     }
 
     // Twice faster than draw_filled_triangle method
-    pub fn draw_filled_triangle_f(tr: &Triangle<i32>, image: &mut PPM, color: &RGB, z_buffer: &mut ZBuffer) -> bool {
+    pub fn draw_filled_triangle_f(tr: &Triangle<i32>, image: &mut PPM, color: &RGB, z_buffer: &mut ZBuffer, normals: &Point3<&Vector3>) -> bool {
         if tr.p1.x == tr.p2.x && tr.p2.x == tr.p3.x {return false;}
         if tr.p1.y == tr.p2.y && tr.p2.y == tr.p3.y {return false;}
 
@@ -139,7 +139,17 @@ pub mod renderer{
                 let idx = p.x + p.y * image.width as i32;
                 if z_buffer.data[idx as usize] < p.z  {
                     z_buffer.data[idx as usize] = p.z;
-                    draw_point(&Point2{x: j, y: p1.y + i}, image, color);
+                    let p = Point3{x: j, y: p1.y + i, z: 0};
+                    let a = tr.get_barocentryc(&p).unwrap().to_vector3();
+                    let normal = normals.x * a.x + 
+                    normals.y * a.y + normals.z * a.z;
+                    let light_dir = Vector3{x: 0., y: 0., z: 1.};
+
+                    let intensity = (normal * light_dir).to_float();
+
+                    if intensity <= 0. {continue;}
+                    
+                    draw_point(&Point2{x: j, y: p1.y + i}, image, &(color * intensity));
                 }
 			}
         }
@@ -221,14 +231,24 @@ pub mod renderer{
         for i in 0..model.faces.len() {
             let (face_in_world, cur_face) = get_triangles(i);
             let light_dir = Vector3{x: 0., y: 0., z: 1.};
-            let normal = face_in_world.calc_normal_v();
+            //let normal = face_in_world.calc_normal_v();
 
-            let intensity = (normal * light_dir).to_float();
+            let normal1 = model.normals.get(&model.faces[i].f1.v).unwrap();
+            let normal2 = model.normals.get(&model.faces[i].f2.v).unwrap();
+            let normal3 = model.normals.get(&model.faces[i].f3.v).unwrap();
 
-            if intensity <= 0. {continue;}
+            let temp: Point3<&Vector3> = Point3 {
+                x: normal1,
+                y: normal2,
+                z: normal3,
+            };
+
+            //let intensity = (normal * light_dir).to_float();
+
+            //if intensity <= 0. {continue;}
             
-            if is_filled {draw_filled_triangle_f(&cur_face, image, &(color * intensity), z_buffer);}
-            else {draw_triangle_t(&cur_face, image, &(color * intensity));}
+            if is_filled {draw_filled_triangle_f(&cur_face, image, color, z_buffer, &temp);}
+            else {draw_triangle_t(&cur_face, image, color);}
         }
         true
     }

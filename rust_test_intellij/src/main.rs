@@ -43,7 +43,7 @@ fn main() {
     let mut image = PPM::new(1000, 1000, 255);
 
     let mut model = Model::new();
-    model.read_obj(obj_path_linx);
+    model.read_obj(obj_path_win);
 
     /*let tri = TriangleInt{
         p1: PointInt{x: 10, y: 20},
@@ -83,7 +83,7 @@ fn main() {
 
     println!("{}, {}, {} : {}", k.x, k.y, k.z, k.to_float());
 
-    image.write_image(&img_path_linx).expect("Error while writing an image!");
+    image.write_image(&img_path_win).expect("Error while writing an image!");
 
     println!("np: {}", c);
     

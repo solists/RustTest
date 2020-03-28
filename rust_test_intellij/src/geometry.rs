@@ -302,6 +302,7 @@ pub mod point {
 pub mod triangle {
     use crate::geometry::point::{Point2, Point3};
     use crate::geometry::vector::{Vector3};
+    //use crate::geometry::triangle::edge_fun;
 
     //type PointInt = Point2<i32>;
 
@@ -338,6 +339,38 @@ pub mod triangle {
             let w2 = (tp.y as f32 - w1 * b.y as f32) / (c.y as f32);
     
             return w1 >= 0. && w2 >= 0. && (w1 + w2) <= 1.;
+        }
+
+        /*pub fn edge_fun(a: &Point3<i32>, b: &Point3<i32>, c: &Point3<i32>) -> i32 {
+            (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x)
+        } */
+
+        pub fn get_barocentryc(&self, p: &Point3<i32>) -> Option<Point3<f32>> {
+            let edge_fun = |a: &Point3<i32>, b: &Point3<i32>, c: &Point3<i32>| {
+                (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x)
+            };
+
+            let area = edge_fun(&self.p1, &self.p2, &self.p3) as f32; // area of the triangle multiplied by 2 
+            let mut w0 = edge_fun(&self.p2, &self.p3, p) as f32; // signed area of the triangle v1v2p multiplied by 2 
+            let mut w1 = edge_fun(&self.p3, &self.p1, p) as f32; // signed area of the triangle v2v0p multiplied by 2 
+            let mut w2 = edge_fun(&self.p1, &self.p2, p) as f32; // signed area of the triangle v0v1p multiplied by 2 
+
+           
+            // if point p is inside triangles defined by vertices v0, v1, v2
+            //if w0 >= 0. && w1 >= 0. && w2 >= 0. { 
+                w0 /= area;
+                w1 /= area;
+                w2 /= area;
+            // barycentric coordinates are the areas of the sub-triangles divided by the area of the main triangle
+                let t = Point3{
+                    x: w0,
+                    y: w1,
+                    z: w2,
+                };
+                return Some(t);
+           // }
+
+            //None
         }
     
         // Faster algo ~25, edge functions
