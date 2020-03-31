@@ -58,7 +58,10 @@ use vulkano::framebuffer::Framebuffer;
 
 
 fn main() {
-    let instance = Instance::new(None, &InstanceExtensions::none(), None)
+    // Added win functionality
+    let required_extensions = vulkano_win::required_extensions();
+
+    let instance = Instance::new(None, &required_extensions, None)
     .expect("failed to create instance");
 
     let physical = PhysicalDevice::enumerate(&instance).next().expect("no device available");
@@ -446,10 +449,10 @@ fn main() {
         Instance::new(None, &extensions, None).expect("failed to create Vulkan instance")
     };
     
-    events_loop.run(|event, win_target, control_flow| {
+    events_loop.run(|event, _, control_flow| {
         match event {
             winit::event::Event::WindowEvent { event: winit::event::WindowEvent::CloseRequested, .. } => {
-                winit::event_loop::ControlFlow::Exit;
+                *control_flow = winit::event_loop::ControlFlow::Exit;
             },
             _ => { winit::event_loop::ControlFlow::Poll; },
         }
