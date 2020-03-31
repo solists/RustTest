@@ -38,6 +38,12 @@ use vulkano::framebuffer::Subpass;
 use vulkano::command_buffer::DynamicState;
 use vulkano::pipeline::viewport::Viewport;
 
+// For windows
+use vulkano_win::VkSurfaceBuild;
+use winit::event_loop::EventLoop;
+use winit::window::WindowBuilder;
+use vulkano::swapchain::{Swapchain, SurfaceTransform, PresentMode}; 
+
 // Cgmath for testing purposes
 use cgmath::Vector3;
 use cgmath::prelude::*;
@@ -430,4 +436,50 @@ fn main() {
     println!("Time in ms: {}", now.elapsed().as_millis());
     // ************************************************
 
+    // Test windowing *********************************
+    let now = Instant::now();
+    let mut events_loop = EventLoop::new();
+    let surface = WindowBuilder::new().build_vk_surface(&events_loop, instance.clone()).unwrap();
+
+    let instance = {
+        let extensions = vulkano_win::required_extensions();
+        Instance::new(None, &extensions, None).expect("failed to create Vulkan instance")
+    };
+    
+    events_loop.run(|event, win_target, control_flow| {
+        match event {
+            winit::event::Event::WindowEvent { event: winit::event::WindowEvent::CloseRequested, .. } => {
+                winit::event_loop::ControlFlow::Exit;
+            },
+            _ => { winit::event_loop::ControlFlow::Poll; },
+        }
+    });
+
+    let caps = surface.capabilities(physical)
+    .expect("failed to get surface capabilities");
+
+    let dimensions = caps.current_extent.unwrap_or([1280, 1024]);
+    let alpha = caps.supported_composite_alpha.iter().next().unwrap();
+    let format = caps.supported_formats[0].0;
+
+    let (swapchain, images) = Swapchain::new(device.clone(), surface.clone(),
+    caps.min_image_count, format, dimensions, 1, caps.supported_usage_flags, &queue,
+    SurfaceTransform::Identity, alpha, PresentMode::Fifo, vulkano::swapchain::FullscreenExclusive::Default, true, vulkano::swapchain::ColorSpace::Hdr10Hlg)
+    .expect("failed to create swapchain");
+
+    let (device, mut queues) = {
+        let device_ext = vulkano::device::DeviceExtensions {
+            khr_swapchain: true,
+            .. vulkano::device::DeviceExtensions::none()
+        };
+    
+        Device::new(physical, physical.supported_features(), &device_ext,
+                    [(queue_family, 0.5)].iter().cloned()).expect("failed to create device")
+    };
+
+    let (image_num, bool_v, acquire_future) = vulkano::swapchain::acquire_next_image(swapchain.clone(), None).unwrap();
+
+    
+    println!("Time in ms: {}", now.elapsed().as_millis());
+    // ************************************************
 }
