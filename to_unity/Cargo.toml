@@ -1,0 +1,11 @@
+[package]
+name = "to-unity"
+version = "0.1.0"
+authors = ["Semen09 <999solom.s.v.999@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "unity_dll"
+crate-type = ["dylib"]
+
+[dependencies]
