@@ -19,8 +19,7 @@ impl SimpleState for Pong {
         let world = _data.world;
 
         initialize_camera(world);
-
-        world.register::<Paddle>();
+        
         let sprite_sheet_handle = load_sprite_sheet(world);
 
         initialize_paddle(world, Vector3{x: PADDLE_WIDTH * 0.5, y: ARENA_HEIGHT / 2.0, z: 0.0}, Side::Left, &sprite_sheet_handle);
