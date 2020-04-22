@@ -1,3 +1,3 @@
 pub mod request;
 
-pub use self::request::{fetch_url, Result};
+pub use self::request::{RequestManager, Result};
