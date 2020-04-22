@@ -1,20 +1,21 @@
 use hyper::{body::HttpBody as _, Client};
 use tokio::io::{self, AsyncWriteExt as _};
-use hyper::{Body, Method, Request};
+use hyper::{Body, Method, Request, Response};
 use hyper::client::{HttpConnector};
 use hyper_tls::HttpsConnector;
 use std::fs;
 use std::path::Path;
+use hyper::http;
 
 use crate::common::structs::{Urls, Config};
 
 // A simple type alias so as to DRY.
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+pub type HttpResult = std::result::Result<Response<hyper::body::Body>, hyper::error::Error>;
 
 pub struct RequestManager {
     token: String,
     urls: Urls,
-    //connector: HttpsConnector<HttpConnector>,
     client: Client<HttpsConnector<HttpConnector>, Body>,
 }
 
@@ -30,22 +31,12 @@ impl RequestManager {
 
         let connector = HttpsConnector::new();
 
-        RequestManager{token: config.token, urls: urls, client: Client::builder().build::<_, hyper::Body>(connector)}//connector: HttpsConnector::new(),}
+        RequestManager{token: config.token, urls: urls, client: Client::builder().build::<_, hyper::Body>(connector)}
     }
 
-    async fn fetch_url(&self, url: &hyper::Uri) -> Result<()> {
-        //let client = Client::builder().build::<_, hyper::Body>(self.connector);
-
-        //let url = format!("{}{}", &self.urls.base_url_sandbox, &self.urls.snbx_register);
-        /*let url = self.urls.base_url_sandbox.clone() + &self.urls.snbx_register;
-        let url = url.parse::<hyper::Uri>().unwrap();
-        if url.scheme_str() != Some("https") {
-            println!("This example only works with 'https' URLs.");
-            return Ok(());
-        }*/
-
+    async fn fetch_url(&self, url: &hyper::Uri, method: Method) -> Result<()> {
         let req = Request::builder()
-            .method(Method::POST)
+            .method(method)
             .uri(url)
             .header("content-type", "application/json")
             .header("Authorization", &self.token)
@@ -67,19 +58,48 @@ impl RequestManager {
 
         Ok(())
     }
+    
+    
+    async fn get_from_url(&self, url: &hyper::Uri) -> HttpResult {
+        let req = Request::builder()
+            .method(Method::GET)
+            .uri(url)
+            .header("Authorization", &self.token)
+            .body(Body::from(r#"{"library":"hyper"}"#))
+            .expect("Error while constructing request");
 
-    pub async fn get_active_orders(&self) -> Result<()> {
-        //let client = Client::builder().build::<_, hyper::Body>(self.connector);
-        let url = self.urls.base_url_sandbox.clone() + &self.urls.snbx_register;
+        self.client.request(req).await
+    }
+
+    pub async fn get_currencies(&self) -> Result<()> {
+        let url = self.urls.base_url.clone() + &self.urls.get_client_currencies;
         let url = url.parse::<hyper::Uri>().unwrap();
-        if url.scheme_str() != Some("https") {
-            println!("This example only works with 'https' URLs.");
-            return Ok(());
+
+        self.get_from_url(&url).await?;
+
+        println!("\n\nDone! Get currencies.");
+
+        Ok(())
+    }
+    
+    pub async fn get_portfolio(&self) -> Result<()> {
+        let url = self.urls.base_url.clone() + &self.urls.get_client_portfolio;
+        let url = url.parse::<hyper::Uri>().unwrap();
+
+        let mut res = self.get_from_url(&url).await?;
+
+        println!("Response: {}", res.status());
+        println!("Headers: {:#?}\n", res.headers());
+        println!("Body: {:#?}\n", res.body());
+
+        // Stream the body, writing each chunk to stdout as we get it
+        // (instead of buffering and printing at the end).
+        while let Some(next) = res.data().await {
+            let chunk = next?;
+            io::stdout().write_all(&chunk).await?;
         }
 
-        self.fetch_url(&url).await?;
-
-        println!("\n\nDone! Get act orders.");
+        println!("\n\nDone get_from_url!");
 
         Ok(())
     }

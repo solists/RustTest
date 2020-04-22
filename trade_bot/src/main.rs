@@ -12,7 +12,7 @@ async fn main() -> Result<()> {
     
     let rq_mngr = RequestManager::new();
 
-    rq_mngr.get_active_orders().await?;
+    rq_mngr.get_portfolio().await?;
 
     Ok(())
 }
