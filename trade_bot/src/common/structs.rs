@@ -32,3 +32,51 @@ pub struct Urls {
     pub get_operations_list : String,
     pub get_user_accounts : String,
 }
+
+// This used to sign what structure is actually fits the response json
+pub enum ResponseKind {
+    Portfolio,
+}
+
+
+
+// **************************************************
+// Structs further are used to serialize responses, 
+// Option values needed to prevent errors if some fields are missing
+// **************************************************
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Portfolio {
+    pub trackingId: String,
+    pub payload:    Positions,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Positions {
+    pub positions: Vec<Position>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Position {
+    pub figi:                   Option<String>,
+    pub ticker:                 Option<String>,
+    pub isin:                   Option<String>,
+    pub instrumentType:         Option<String>,
+    pub balance:                Option<f32>,
+    pub lots:                   Option<f32>,
+    pub expectedYield:          ExpectedYield,
+    pub averagePositionPrice:   AveragePositionPrice, 
+    pub name:                   Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ExpectedYield {
+    pub currency:   Option<String>,
+    pub value:      Option<f32>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AveragePositionPrice {
+    pub currency:   Option<String>,
+    pub value:      Option<f32>,
+}
+
