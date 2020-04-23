@@ -2,8 +2,10 @@
 #![warn(rust_2018_idioms)]
 
 mod http_connector;
-use http_connector::{Result, RequestManager};
+use http_connector::{RequestManager};
 mod common;
+use common::types::Result;
+mod data_storage;
 
 #[tokio::main]
 async fn main() -> Result<()> {
