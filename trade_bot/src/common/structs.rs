@@ -48,6 +48,7 @@ pub enum ResponseKind {
 pub struct Portfolio {
     pub trackingId: String,
     pub payload:    Positions,
+    pub status:     String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -79,4 +80,33 @@ pub struct AveragePositionPrice {
     pub currency:   Option<String>,
     pub value:      Option<f32>,
 }
+
+// **************************************************
+// Get market stocks, bonds, etfs, currencies
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Market {
+    pub trackingId: String,
+    pub payload:    Instruments,
+    pub status:     String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Instruments {
+    pub positions: Vec<Instrument>,
+    pub total:     String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Instrument {
+    pub figi:                   Option<String>,
+    pub ticker:                 Option<String>,
+    pub isin:                   Option<String>,
+    pub minPriceIncrement:      Option<f32>,
+    pub faceValue:              Option<f32>,
+    pub lot:                    Option<i32>,
+    pub currency:               Option<String>,
+    pub name:                   Option<String>,
+    pub r#type:                 Option<String>,
+}
+
 
