@@ -19,7 +19,12 @@ async fn main() -> Result<()> {
 
     rq_mngr.get_portfolio().await?;
 
-    println!("Execution time {}\n\n", now.elapsed().as_millis());
+    rq_mngr.get_market_bonds().await?;
+    rq_mngr.get_market_currencies().await?;
+    rq_mngr.get_market_etfs().await?;
+    rq_mngr.get_market_stocks().await?;
+
+    println!("\n\nExecution time {} ms.\n\n", now.elapsed().as_millis());
 
     Ok(())
 }

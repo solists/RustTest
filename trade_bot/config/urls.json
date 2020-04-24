@@ -14,7 +14,7 @@
     "get_client_currencies" : "/portfolio/currencies",
     "get_stocks_list" : "/market/stocks",
     "get_bonds_list" : "/market/bonds",
-    "get_etf_list" : "/market/etfs",
+    "get_etfs_list" : "/market/etfs",
     "get_currencies_list" : "/market/currencies",
     "get_candles_list" : "/market/bonds",
     "get_orderbook" : "/market/orderbook",

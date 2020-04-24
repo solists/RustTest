@@ -7,4 +7,4 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + S
 pub type HttpResult = std::result::Result<Response<hyper::body::Body>, hyper::error::Error>;
 // TODO: Key supposed to be a timestamp
 pub type PortfolioStorageType = HashMap<usize, common::structs::Portfolio>;
-pub type MarketStorageType = HashMap<usize, common::structs::Market>;
+pub type MarketStorageType = HashMap<String, common::structs::Instrument>;

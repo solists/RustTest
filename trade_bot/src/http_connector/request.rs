@@ -36,7 +36,7 @@ impl RequestManager {
     }
     
     // Writes response body from get request to storage
-    async fn get_from_url_to_storage(&self, url: &hyper::Uri) -> Result<()> {
+    async fn get_from_url_to_storage(&self, url: &hyper::Uri, resp_kind: ResponseKind) -> Result<()> {
         let req = Request::builder()
             .method(Method::GET)
             .uri(url)
@@ -58,20 +58,48 @@ impl RequestManager {
             response_data.push(next?);
         }
 
-        self.updater.write_json_to_storage(response_data, ResponseKind::Portfolio).await
+        self.updater.write_json_to_storage(response_data, resp_kind).await
     }
 
-    /*pub async fn get_currencies(&self) -> Result<()> {
+    pub async fn get_currencies(&self) -> Result<()> {
         let url = self.urls.base_url.clone() + &self.urls.get_client_currencies;
         let url = url.parse::<hyper::Uri>().unwrap();
 
-        self.get_from_url_to_storage(&url).await
-    }*/
+        self.get_from_url_to_storage(&url, ResponseKind::Portfolio).await
+    }
     
     pub async fn get_portfolio(&self) -> Result<()> {
         let url = self.urls.base_url.clone() + &self.urls.get_client_portfolio;
         let url = url.parse::<hyper::Uri>().unwrap();
 
-        self.get_from_url_to_storage(&url).await
+        self.get_from_url_to_storage(&url, ResponseKind::Portfolio).await
+    }
+    
+    pub async fn get_market_etfs(&self) -> Result<()> {
+        let url = self.urls.base_url.clone() + &self.urls.get_etfs_list;
+        let url = url.parse::<hyper::Uri>().unwrap();
+
+        self.get_from_url_to_storage(&url, ResponseKind::Market).await
+    }
+    
+    pub async fn get_market_stocks(&self) -> Result<()> {
+        let url = self.urls.base_url.clone() + &self.urls.get_stocks_list;
+        let url = url.parse::<hyper::Uri>().unwrap();
+
+        self.get_from_url_to_storage(&url, ResponseKind::Market).await
+    }
+    
+    pub async fn get_market_currencies(&self) -> Result<()> {
+        let url = self.urls.base_url.clone() + &self.urls.get_currencies_list;
+        let url = url.parse::<hyper::Uri>().unwrap();
+
+        self.get_from_url_to_storage(&url, ResponseKind::Market).await
+    }
+    
+    pub async fn get_market_bonds(&self) -> Result<()> {
+        let url = self.urls.base_url.clone() + &self.urls.get_bonds_list;
+        let url = url.parse::<hyper::Uri>().unwrap();
+
+        self.get_from_url_to_storage(&url, ResponseKind::Market).await
     }
 }
