@@ -1,0 +1,7 @@
+{
+    "app_name":             "TEMPOR",
+	"path_to_iib_cmd":      "U:/Program Files/IBM/IIB/10.0.0.19/iib.cmd",
+	"path_to_app":          "C:/Users/Semen/IBM/IIBT10/workspace/temp_appl",
+	"path_to_bar":          "C:/Users/Semen/Desktop/out/123.bar",
+	"path_to_out_props":    "C:/Users/Semen/Desktop/out/123.txt"
+}
