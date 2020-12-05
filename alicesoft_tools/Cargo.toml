@@ -1,0 +1,17 @@
+[package]
+authors = ["Semen <solomennikov@phystech.edu>"]
+edition = "2018"
+name = "alicesoft_tools"
+version = "0.1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hyper = "0.13"
+hyper-tls = "0.4"
+serde = {version = "1.0", features = ["derive"]}
+serde_json = "1.0"
+#bytes ops
+bytes = "0.5"
+futures = "0.3"
+tokio = {version = "0.2", features = ["full"]}

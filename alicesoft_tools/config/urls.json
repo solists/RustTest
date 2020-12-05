@@ -1,0 +1,4 @@
+{
+    "base_url": "https://translate.api.cloud.yandex.net",
+    "translate": "/translate/v2/translate"
+}
