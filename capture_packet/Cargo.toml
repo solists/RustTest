@@ -1,0 +1,10 @@
+[package]
+name = "capture_packet"
+version = "0.1.0"
+authors = ["SolistS <solomennikov@phystech.edu>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+pcap = "0.7.0"
