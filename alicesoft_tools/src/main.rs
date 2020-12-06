@@ -16,11 +16,11 @@ async fn main() {
 
     //println!("{}", strg.messages[&4114]);
 
-    write_temp_file(&strg, "temp.txt").unwrap();
+    //write_temp_file(&strg, "temp.txt").unwrap();
 
     //println!("{}", strg.messages[&4113]);
 
-    //let trans = run_translation(&strg).await;
+    run_translation(&strg).await;
 
     //write_temp_file(&trans, "translated.txt").unwrap();
 }
@@ -269,7 +269,7 @@ impl RequestManager {
         let tr = TranslateRequest {
             folder_id: self.folder.clone(),
             texts: texts,
-            targetLanguageCode: "ru".to_owned(),
+            targetLanguageCode: "en".to_owned(),
             sourceLanguageCode: "ja".to_owned(),
         };
 
